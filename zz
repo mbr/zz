@@ -1,0 +1,47 @@
+#!/usr/bin/python3
+
+import os
+
+import click
+
+DEFAULT_ZZ_FILE = os.path.expanduser('~/.zz-timesheet')
+
+
+class TimeSheet(object):
+    def __init__(self, path):
+        self.path = path
+
+
+@click.group()
+@click.option('-f',
+              '--file',
+              'tsfile',
+              type=click.Path(writable=True,
+                              dir_okay=False),
+              default=DEFAULT_ZZ_FILE,
+              help='Timesheet file to use')
+@click.pass_context
+def cli(ctx, tsfile):
+    click.echo('Using timesheet file: {}'.format(tsfile))
+    ctx.obj = TimeSheet(tsfile)
+
+
+@click.pass_context
+def now(ts):
+    raise NotImplementedError
+
+
+@cli.command()
+@click.pass_obj
+def begin(ts):
+    raise NotImplementedError
+
+
+@cli.command()
+@click.pass_obj
+def end(ts):
+    raise NotImplementedError
+
+
+if __name__ == '__main__':
+    cli()
