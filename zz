@@ -112,18 +112,19 @@ def cli(ctx, tsfile):
     ctx.obj = TimeSheet(tsfile)
 
 
+@cli.command(help='Show what' 's going on')
 @click.pass_context
 def now(ts):
-    raise NotImplementedError
+    print('now!')
 
 
-@cli.command()
+@cli.command(help='Begin a new task')
 @click.pass_obj
 def begin(ts):
     raise NotImplementedError
 
 
-@cli.command()
+@cli.command(help='End the current task')
 @click.pass_obj
 def end(ts):
     raise NotImplementedError
