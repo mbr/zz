@@ -1,15 +1,101 @@
 #!/usr/bin/python3
 
+import datetime
+import re
 import os
+from warnings import warn
 
 import click
 
 DEFAULT_ZZ_FILE = os.path.expanduser('~/.zz-timesheet')
 
 
+def drop_after(line, char):
+    idx = line.find(';')
+
+    if idx != -1:
+        return line[:idx]
+
+    return line
+
+
+class TimeSheetParseError(Exception):
+    def __init__(self, msg, lineno=None, path=None):
+        super(TimeSheetParseError, self).__init__(msg)
+        self.lineno = lineno
+        self.path = path
+
+    def __str__(self):
+        msg = super(TimeSheetParseError, self).__str__()
+        if self.path and self.lineno:
+            return '{}, line {}: {}'.format(self.path, self.lineno, msg)
+        return msg
+
+
 class TimeSheet(object):
+    TIMESTAMP_RE = re.compile(r'^(?:(\d{4}-\d{2}-\d{2})\s+)?'
+                              r'(\d{2}:\d{2}(?::\d{2})?)\s+'
+                              r'(.*)?$')
+
     def __init__(self, path):
         self.path = path
+        self.reload()
+
+    def reload(self):
+        prev_timestamp = None
+        timestamp = None
+
+        if os.path.exists(self.path):
+            print('parsing')
+            with open(self.path) as src:
+                for lineno, line in enumerate(src, 1):
+                    line = drop_after(line, ';')
+
+                    if not line.strip():
+                        # blank line, terminates timestamped block
+                        if timestamp:
+                            prev_timestamp = timestamp
+                            timestamp = None
+                            print('BLOCK END', prev_timestamp)
+                        continue
+
+                    if not timestamp and line[0].isspace():
+                        raise TimeSheetParseError('Expected timestamp.',
+                                                  lineno=lineno,
+                                                  path=self.path)
+
+                    # check if it's a timestamp
+                    m = self.TIMESTAMP_RE.match(line)
+                    if m:
+                        date_s = m.group(1)
+                        time_s = m.group(2)
+
+                        tz_s = m.group(3).strip()
+
+                        if tz_s:
+                            warn('timezones not implemented at the moment')
+
+                        # FIXME: switch to arrow
+                        # parse date first
+                        if not date_s:
+                            if not prev_timestamp:
+                                raise TimeSheetParseError('Missing date',
+                                                          lineno=lineno,
+                                                          path=self.path)
+                            tt_date = list(prev_timestamp.date().timetuple(
+                            )[:3])
+                        else:
+                            tt_date = [int(v) for v in date_s.split('-')]
+
+                        # time next
+                        tt_time = [int(v) for v in time_s.split(':')]
+
+                        timestamp = datetime.datetime(*(tt_date + tt_time))
+                        print('BLOCK ENTER', timestamp)
+
+                    # it's a block input
+                    line = line.strip()
+                    print(line)
 
 
 @click.group()
