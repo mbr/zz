@@ -9,9 +9,12 @@
   acc:do-not-bill
   inv:mbr-1
 
-2016-04-24 15:15:12 WEST
+15:15:12 WEST
   begin writing README.rst
   inv:mbr-1
 
 2016-04-24 15:19:10 WEST
   end (via file)
+
+2016-04-25 20:15 WEST
+  begin in-flight hacking
