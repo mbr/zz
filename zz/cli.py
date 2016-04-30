@@ -7,16 +7,9 @@ from warnings import warn
 
 import click
 
+from . import parser
+
 DEFAULT_ZZ_FILE = os.path.expanduser('~/.zz-timesheet')
-
-
-def drop_after(line, char):
-    idx = line.find(';')
-
-    if idx != -1:
-        return line[:idx]
-
-    return line
 
 
 class Block(object):
@@ -68,10 +61,9 @@ class TimeSheet(object):
             with open(self.path) as src:
                 buf = src.read() + '\n\n'  # extra nl to ensure last block is
                 # finished
+                buf = parser.preprocess(buf)
 
             for lineno, line in enumerate(buf.splitlines(), 1):
-                line = drop_after(line, ';')
-
                 if not line.strip():
                     # blank line, terminates timestamped block
                     if not block.is_empty():
