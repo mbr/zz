@@ -20,7 +20,7 @@ setup(name='zz',
       url='https://github.com/mbr/zz',
       license='MIT',
       packages=find_packages(exclude=['tests']),
-      install_requires=['click', 'arrow'],
+      install_requires=['click', 'arrow', 'parsley'],
       entry_points={
           'console_scripts': [
               'zz = zz.cli:cli',

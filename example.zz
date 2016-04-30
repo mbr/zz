@@ -6,12 +6,12 @@
 
 2016-04-24 15:13:12 WEST
   begin hacking on zz
-  acc:do-not-bill
-  inv:mbr-1
+  t acc:do-not-bill
+  t inv:mbr-1
 
-15:15:12 WEST
+2016-04-24 15:15:12 WEST
   begin writing README.rst
-  inv:mbr-1
+  t inv:mbr-1
 
 2016-04-24 15:19:10 WEST
   end (via file)
