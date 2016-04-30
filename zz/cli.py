@@ -169,7 +169,3 @@ def begin(ts):
 @click.pass_obj
 def end(ts):
     raise NotImplementedError
-
-
-if __name__ == '__main__':
-    cli()
